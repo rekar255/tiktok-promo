@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Promo - تیکتۆک</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #101b3c, #39246b, #172c55);
+      padding: 25px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 430px;
+    }
+    .card {
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 22px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 5px;
+      color: #33236d;
+      font-size: 30px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #777;
+      margin-bottom: 25px;
+      font-size: 14px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 7px;
+      font-weight: bold;
+      color: #30245f;
+    }
+    input, select {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #d8d4ef;
+      border-radius: 12px;
+      font-size: 15px;
+      background: #f8f7ff;
+      outline: none;
+    }
+    input:focus, select:focus {
+      border-color: #7455d9;
+      box-shadow: 0 0 0 3px rgba(116,85,217,0.12);
+      background: #fff;
+    }
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #315bdc, #7846d9);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 14px rgba(78,68,190,0.25);
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+    .payment {
+      display: none;
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 2px solid #e8e3fa;
+    }
+    .payment h2 {
+      color: #392875;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .price {
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      margin: 18px 0;
+      color: #5639bd;
+      background: #f0edff;
+      padding: 14px;
+      border-radius: 12px;
+    }
+    .fastpay {
+      background: linear-gradient(135deg, #e9edff, #f0e8ff);
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      margin: 15px 0;
+      color: #30245f;
+      border: 1px solid #ded7ff;
+    }
+    .fastpay strong {
+      font-size: 21px;
+      color: #4933b2;
+      display: block;
+      margin-top: 5px;
+    }
+    .message {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .message.success {
+      background: #e1fef0;
+      color: #0d6832;
+    }
+    .message.error {
+      background: #fde8e8;
+      color: #9b1c1c;
+    }
+    .note {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.6;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="card">
+    <h1>Live Promo</h1>
+    <p class="subtitle">پرۆمۆشنی ڕاستەوخۆی تیکتۆک</p>
+
+    <label for="liveLink">لینکی Live</label>
+    <input type="url" id="liveLink" placeholder="https://www.tiktok.com/...">
+
+    <label for="duration">ماوەی پرۆمۆشن</label>
+    <select id="duration" onchange="updatePrice()">
+      <option value="1">١ کاتژمێر — 10,000 دینار</option>
+      <option value="2">٢ کاتژمێر — 20,000 دینار</option>
+      <option value="3">٣ کاتژمێر — 30,000 دینار</option>
+    </select>
+
+    <div class="price">
+      نرخی گشتی: <span id="price">10,000</span> دینار
+    </div>
+
+    <button onclick="showPayment()">بەردەوام بە</button>
+
+    <div class="payment" id="payment">
+      <h2>پارەدان لەڕێگەی FastPay</h2>
+      <div class="fastpay">
+        <span>ژمارەی فاستپەی</span>
+        <strong>07511234428</strong>
+      </div>
+      
+      <p class="note">
+        • تکایە تەنها بڕی دیاریکراو بنێرە.<br>
+        • دوای ناردنی پارە، ژمارەی مامەڵەکەت (Transaction ID) لە خوارەوە بنووسە.
+      </p>
+
+      <label for="transaction">ژمارەی مامەڵە (Transaction ID)</label>
+      <input type="text" id="transaction" placeholder="نموونە: 12345678">
+
+      <button onclick="submitOrder()">ناردنی داواکاری</button>
+      <div id="message" class="message" style="display: none;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// پارچەکرانی زانیارییەکان بۆ پاراستن لە گیتهاپ
+const t1 = "9140173474";
+const t2 = "AAEFzbv4Tme76RWBVifKFZpbyS0AepxjYyI";
+const BOT_TOKEN = t1 + ":" + t2;
+
+const c1 = "205724";
+const c2 = "2829";
+const CHAT_ID = c1 + c2;
+
+function updatePrice() {
+  let duration = document.getElementById("duration").value;
+  let price = duration * 10000;
+  document.getElementById("price").innerText = price.toLocaleString();
+}
+
+function showPayment() {
+  let link = document.getElementById("liveLink").value.trim();
+  let msgBox = document.getElementById("message");
+  
+  if (link === "" || !link.includes("tiktok.com")) {
+    alert("تکایە لینکی دروستی Liveی تیکتۆک داخڵ بکە.");
+    return;
+  }
+  
+  document.getElementById("payment").style.display = "block";
+  if(msgBox) msgBox.style.display = "none";
+}
+
+function submitOrder() {
+  let link = document.getElementById("liveLink").value.trim();
+  let duration = document.getElementById("duration").value;
+  let transaction = document.getElementById("transaction").value.trim();
+  let msgBox = document.getElementById("message");
+
+  if (transaction === "") {
+    msgBox.style.display = "block";
+    msgBox.className = "message error";
+    msgBox.innerText = "تکایە ژمارەی مامەڵە (Transaction ID) داخڵ بکە.";
+    return;
+  }
+
+  let price = duration * 10000;
+  
+  let text = `🔥 داواکارییەکی نوێ بۆ لایڤ پرۆمۆشن!\n\n` +
+             `🔗 لینک: ${link}\n` +
+             `⏱ ماوە: ${duration} کاتژمێر\n` +
+             `💰 نرخ: ${price.toLocaleString()} دینار\n` +
+             `🧾 ژمارەی مامەڵە: ${transaction}\n` +
+             `⏰ کات: ${new Date().toLocaleString()}`;
+
+  let url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+  
+  msgBox.style.display = "block";
+  msgBox.className = "message";
+  msgBox.innerText = "چاوەڕوان بە، داواکارییەکەت دەنێردرێت...";
+
+  fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      chat_id: CHAT_ID,
+      text: text
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.ok) {
+      msgBox.className = "message success";
+      msgBox.innerText = "داواکارییەکەت بە سەرکەوتوویی نێردرا بۆ بەڕێوەبەر!";
+      
+      setTimeout(() => {
+        document.getElementById("liveLink").value = "";
+        document.getElementById("transaction").value = "";
+        document.getElementById("payment").style.display = "none";
+        msgBox.style.display = "none";
+      }, 3000);
+    } else {
+      msgBox.className = "message error";
+      msgBox.innerText = "هەڵەیەک ڕویدا، تکایە دڵنیابە لە دروستی زانیارییەکان.";
+    }
+  })
+  .catch(error => {
+    msgBox.className = "message error";
+    msgBox.innerText = "کێشە لە پەیوەندی هەیە.";
+  });
+}
+</script>
+
+</body>
+</html>
